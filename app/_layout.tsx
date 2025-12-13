@@ -31,8 +31,8 @@ export default function Layout() {
       <Stack.Screen
         name="filter"
         options={{
-          presentation: "transparentModal",
-          animation: "fade",
+          presentation: "modal",
+          animation: "slide_from_bottom",
         }}
       />
       <Stack.Screen name="settings" />

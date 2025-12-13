@@ -22,6 +22,8 @@ interface TaskState {
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
+  filter: { status: string };
+  setFilter: (filter: { status: string }) => void;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -29,6 +31,7 @@ export const useTaskStore = create<TaskState>()(
     (set) => ({
       notificationsEnabled: true,
       tasks: [],
+      filter: { status: "All" },
       addTask: (task) =>
         set((state) => ({
           tasks: [
@@ -59,6 +62,7 @@ export const useTaskStore = create<TaskState>()(
       clearAll: () => set({ tasks: [] }),
       setNotificationsEnabled: (enabled) =>
         set({ notificationsEnabled: enabled }),
+      setFilter: (filter) => set({ filter }),
     }),
     {
       name: "task-storage",

@@ -5,9 +5,10 @@ import { cn } from "../../lib/utils";
 interface FABProps extends TouchableOpacityProps {
   onPress: () => void;
   className?: string;
+  icon?: React.ReactNode;
 }
 
-export function FAB({ onPress, className, ...props }: FABProps) {
+export function FAB({ onPress, className, icon, ...props }: FABProps) {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -18,7 +19,7 @@ export function FAB({ onPress, className, ...props }: FABProps) {
       activeOpacity={0.8}
       {...props}
     >
-      <Ionicons name="add" size={30} color="white" />
+      {icon || <Ionicons name="add" size={30} color="white" />}
     </TouchableOpacity>
   );
 }

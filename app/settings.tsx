@@ -2,14 +2,15 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
 import { useRouter } from "expo-router";
 import {
+  ActionSheetIOS,
   Alert,
+  Platform,
   ScrollView,
   Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Button } from "../components/ui/Button";
 import { useTaskStore } from "../store/taskStore";
 
 export default function Settings() {
@@ -35,75 +36,111 @@ export default function Settings() {
   };
 
   const handleClearAll = () => {
-    Alert.alert(
-      "Clear All Data",
-      "Are you sure you want to delete all tasks? This action cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
+    if (Platform.OS === "ios") {
+      ActionSheetIOS.showActionSheetWithOptions(
         {
-          text: "Clear",
-          style: "destructive",
-          onPress: () => {
-            clearAll();
-            Alert.alert("Success", "All data has been cleared.");
-          },
+          options: ["Cancel", "Clear All Data"],
+          destructiveButtonIndex: 1,
+          cancelButtonIndex: 0,
+          title: "Irreversible Action",
+          message: "This will permanently delete all your tasks.",
         },
-      ]
-    );
+        (buttonIndex) => {
+          if (buttonIndex === 1) {
+            clearAll();
+          }
+        }
+      );
+    } else {
+      Alert.alert(
+        "Clear All Data",
+        "Are you sure you want to delete all tasks? This action cannot be undone.",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Clear",
+            style: "destructive",
+            onPress: () => {
+              clearAll();
+              Alert.alert("Success", "All data has been cleared.");
+            },
+          },
+        ]
+      );
+    }
   };
 
   return (
     <View className="flex-1 bg-white">
-      <View className="px-6 pt-12 pb-6 flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()} className="mr-4">
-          <Ionicons name="arrow-back" size={24} color="#111827" />
+      {/* Header */}
+      <View className="px-8 pt-16 pb-8">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="w-10 h-10 -ml-2 mb-6 items-center justify-center rounded-full active:bg-gray-50"
+        >
+          <Ionicons name="arrow-back" size={28} color="black" />
         </TouchableOpacity>
-        <Text className="text-2xl font-bold text-brand-dark">Settings</Text>
+        <Text className="text-5xl font-light text-black tracking-tighter">
+          Settings
+        </Text>
       </View>
 
-      <ScrollView className="flex-1 px-6">
-        <View className="flex-row justify-between items-center py-4 border-b border-gray-100">
-          <Text className="text-base font-medium text-brand-dark">
-            Allow Notifications
+      <ScrollView className="flex-1 px-8" showsVerticalScrollIndicator={false}>
+        {/* Section: Preferences */}
+        <View className="mb-12">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
+            Preferences
           </Text>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={handleNotificationToggle}
-            trackColor={{ false: "#E5E7EB", true: "#111827" }}
-            thumbColor="#FFFFFF"
-          />
+          <View className="flex-row justify-between items-center py-2">
+            <View>
+              <Text className="text-xl font-medium text-black tracking-tight mb-1">
+                Notifications
+              </Text>
+              <Text className="text-gray-400 text-sm">
+                Get reminders for your tasks
+              </Text>
+            </View>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={handleNotificationToggle}
+              trackColor={{ false: "#E5E7EB", true: "#000000" }}
+              thumbColor="#FFFFFF"
+              ios_backgroundColor="#E5E7EB"
+            />
+          </View>
         </View>
 
-        <View className="mt-8 mb-8">
-          <Button
-            label="Clear All Data"
-            className="bg-black rounded-full py-4 text-white"
+        {/* Section: Data */}
+        <View className="mb-12">
+          <Text className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
+            Data & Storage
+          </Text>
+          <TouchableOpacity
             onPress={handleClearAll}
-          />
+            className="flex-row justify-between items-center py-2 active:opacity-60"
+          >
+            <View>
+              <Text className="text-xl font-medium text-red-500 tracking-tight mb-1">
+                Clear all data
+              </Text>
+              <Text className="text-gray-400 text-sm">
+                Delete all tasks permanently
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color="#EF4444" />
+          </TouchableOpacity>
         </View>
 
-        <View className="mt-4 space-y-4">
-          <View className="flex-row justify-between py-2">
-            <Text className="font-medium text-brand-dark">License</Text>
-            <Text className="text-gray-500">MIT</Text>
-          </View>
-          <View className="flex-row justify-between py-2">
-            <Text className="font-medium text-brand-dark">Version</Text>
-            <Text className="text-gray-500">1.0.0</Text>
-          </View>
-        </View>
+        {/* Footer */}
+        <View className="items-center mt-10 mb-20">
+          <View className="w-10 h-1 rounded-full bg-gray-100 mb-8" />
+          <Text className="text-sm font-semibold text-black mb-2">Onyx</Text>
+          <Text className="text-xs text-gray-400 mb-8">Version 1.0.0</Text>
 
-        <View className="items-center mt-20">
-          <View className="flex-row space-x-1 mb-2">
-            <View className="w-8 h-8 rounded-l-full bg-brand-primary opacity-80" />
-            <View className="w-8 h-8 rounded-r-full bg-brand-primary opacity-60 -ml-4" />
-          </View>
-          <Text className="text-xs text-gray-500">Version 1.0.0</Text>
-
-          <View className="flex-row space-x-6 mt-6">
-            <FontAwesome name="twitter" size={24} color="#111827" />
-            <FontAwesome name="github" size={24} color="#111827" />
-            <FontAwesome name="linkedin" size={24} color="#111827" />
+          <View className="flex-row space-x-8 opacity-40">
+            <FontAwesome name="twitter" size={24} color="black" />
+            <FontAwesome name="github" size={24} color="black" />
+            <FontAwesome name="linkedin" size={24} color="black" />
           </View>
         </View>
       </ScrollView>

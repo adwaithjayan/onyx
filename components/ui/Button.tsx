@@ -11,6 +11,7 @@ interface ButtonProps extends TouchableOpacityProps {
   variant?: "primary" | "secondary" | "ghost" | "filter";
   className?: string;
   textClassName?: string;
+  labelStyle?: string;
   icon?: React.ReactNode;
 }
 
@@ -19,6 +20,7 @@ export function Button({
   variant = "primary",
   className,
   textClassName,
+  labelStyle,
   icon,
   ...props
 }: ButtonProps) {
@@ -47,7 +49,12 @@ export function Button({
     >
       {icon && <View className="mr-2">{icon}</View>}
       <Text
-        className={cn(textBaseStyles, textVariants[variant], textClassName)}
+        className={cn(
+          textBaseStyles,
+          textVariants[variant],
+          textClassName,
+          labelStyle
+        )}
       >
         {label}
       </Text>
